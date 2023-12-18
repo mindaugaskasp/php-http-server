@@ -72,10 +72,11 @@ $message = sprintf('Listening on %s:%s', $host, $port);
 
 $server->listen();
 
-$response = "HTTP/2.0 500 Internal Error\r\n";
+$response = "HTTP/2.0 200 OK\r\n";
 $response .= "Content-Type: application/json\r\n";
 $response .= "Host: 127.0.0.1\r\n";
 $response .= "Connection: Close\r\n\r\n";
+$response .= "{\"test\":\"test\"}\r\n";
 
 do {
     $tcp = $server->accept();
