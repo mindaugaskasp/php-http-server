@@ -1,4 +1,6 @@
 <?php
+set_time_limit(0);
+ob_implicit_flush();
 
 class Server {
 
@@ -13,9 +15,15 @@ class Server {
     /**
      * @throws Exception
      */
-    public function listen(): Socket
+    public function listen(): self
     {
         socket_listen($this->socket);
+
+        return $this;
+    }
+
+    public function accept()
+    {
         return socket_accept($this->socket);
     }
 
@@ -25,7 +33,7 @@ class Server {
     public function read(Socket $connection): string
     {
         // read any data coming from established tcp socket connection
-        $data = socket_read($connection, 1024);
+        $data = socket_read($connection, 2048);
 
         if (false === $data) {
             throw new Exception('Failed to read incoming tcp connection data');
@@ -62,23 +70,30 @@ $server = new Server($host, $port);
 
 $message = sprintf('Listening on %s:%s', $host, $port);
 
+$server->listen();
 
-while (true) {
-    $tcp = $server->listen();
+$response = "HTTP/2.0 500 Internal Error\r\n";
+$response .= "Content-Type: application/json\r\n";
+$response .= "Host: 127.0.0.1\r\n";
+$response .= "Connection: Close\r\n\r\n";
+
+do {
+    $tcp = $server->accept();
+    if (false === $tcp) {
+        break;
+    }
 
     try {
         $data = $server->read($tcp);
 
-        if (strlen($data) > 0) {
-            echo sprintf('%s: Request received [%s]', time(), $data);
+        echo sprintf('%s: Request received [%s]', time(), trim($data));
 
-            socket_write($tcp, $data);
-        }
+        socket_write($tcp, $response);
 
         socket_close($tcp);
     } catch (Exception $e) {
         echo $e->getMessage();
     }
-}
+} while (true);
 
 
