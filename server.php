@@ -1,9 +1,12 @@
 <?php
+
+require __DIR__.'/vendor/autoload.php';
+
 set_time_limit(0);
 ob_implicit_flush();
 
-class Server {
-
+class Server
+{
     private Socket $socket;
 
     public function __construct(private string $host, private string $port)
@@ -73,12 +76,12 @@ $message = sprintf('Listening on %s:%s', $host, $port);
 $server->listen();
 
 $response = "HTTP/2.0 200 OK\r\n";
-$response .= "Content-Type: application/json\r\n";
+$response .= "Content-Type: text/html\r\n";
 $response .= "Host: 127.0.0.1\r\n";
 $response .= "Connection: Close\r\n\r\n";
-$response .= "{\"test\":\"test\"}\r\n";
+$response .= "<h1>hello,world</h1>\r\n";
 
-do {
+while (true) {
     $tcp = $server->accept();
     if (false === $tcp) {
         break;
@@ -95,6 +98,4 @@ do {
     } catch (Exception $e) {
         echo $e->getMessage();
     }
-} while (true);
-
-
+}
