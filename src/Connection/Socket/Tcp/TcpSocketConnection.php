@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Src\Connection\Tcp;
+namespace src\Connection\Socket\Tcp;
 
-use Src\Socket\Client\AbstractSocketConnection;
+use Src\Connection\Socket\AbstractSocketConnection;
 
 class TcpSocketConnection extends AbstractSocketConnection
 {

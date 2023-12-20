@@ -1,5 +1,5 @@
 <?php
 
-namespace Src\Socket\Exception;
+namespace Src\Connection\Socket\Exception;
 
 class SocketWriteException extends \Exception {}

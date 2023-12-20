@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Socket;
-
-use Socket;
+namespace Src\Connection\Socket;
 
 interface SocketHandler
 {
