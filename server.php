@@ -1,80 +1,35 @@
 <?php
 
+use Src\Connection\Tcp\TcpSocketConnection;
+
 require __DIR__.'/vendor/autoload.php';
 
 set_time_limit(0);
 ob_implicit_flush();
 
-class Server
-{
-    private Socket $socket;
-
-    public function __construct(private string $host, private string $port)
-    {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_bind($this->socket, $this->host, (int) $this->port);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function listen(): self
-    {
-        socket_listen($this->socket);
-
-        return $this;
-    }
-
-    public function accept()
-    {
-        return socket_accept($this->socket);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function read(Socket $connection): string
-    {
-        // read any data coming from established tcp socket connection
-        $data = socket_read($connection, 2048);
-
-        if (false === $data) {
-            throw new Exception('Failed to read incoming tcp connection data');
-        }
-
-        return $data;
-    }
-}
-
 $args = $_SERVER['argv'];
 
-$host = '127.0.0.1';
-$port = '8000';
-
-$argArray = [];
-
-// try to parse command line arguments for --host and --port
+$parsedArgs = [];
 
 if (count($args) > 1) {
-    parse_str($args[1], $argArray);
-}
-
-if (count($args) > 2) {
-    parse_str($args[1], $argArray);
-    parse_str($args[2], $argArray);
+    parse_str($args[1], $parsedArgs);
 }
 
 // overwrite with command line arguments if any
-$host = $argArray['--host'] ?? $host;
-$port = $argArray['--port'] ?? $port;
+$defaultHost = '127.0.0.1:8000';
+
+$host = $parsedArgs['--host'] ?? $defaultHost;
 
 // Run things
-$server = new Server($host, $port);
+$tcpServer = new TcpSocketConnection(
+    ...explode(':', $host)
+);
 
-$message = sprintf('Listening on %s:%s', $host, $port);
+$tcpServer->listen();
 
-$server->listen();
+echo sprintf('Listening on %s', $host);
 
+// todo remove this later
 $response = "HTTP/2.0 200 OK\r\n";
 $response .= "Content-Type: text/html\r\n";
 $response .= "Host: 127.0.0.1\r\n";
@@ -82,19 +37,15 @@ $response .= "Connection: Close\r\n\r\n";
 $response .= "<h1>hello,world</h1>\r\n";
 
 while (true) {
-    $tcp = $server->accept();
-    if (false === $tcp) {
-        break;
-    }
+    $connection = $tcpServer->accept();
 
     try {
-        $data = $server->read($tcp);
+        $data = $tcpServer->read($connection, 2046);
 
         echo sprintf('%s: Request received [%s]', time(), trim($data));
 
-        socket_write($tcp, $response);
-
-        socket_close($tcp);
+        $tcpServer->write($connection, $response, strlen($response));
+        $tcpServer->close($connection);
     } catch (Exception $e) {
         echo $e->getMessage();
     }
