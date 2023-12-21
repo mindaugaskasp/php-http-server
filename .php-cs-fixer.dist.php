@@ -10,6 +10,8 @@ return $config
     ->setRules([
         '@PSR12' => true,
         '@PhpCsFixer' => true,
+        'single_line_after_imports' => true,
+        'no_unused_imports' => true,
     ])
     ->setFinder(PhpCsFixer\Finder::create()
         ->in(__DIR__)
@@ -19,5 +21,4 @@ return $config
     // ->append([
     //     'file-to-include',
     // ])
-    )
-    ;
+    );

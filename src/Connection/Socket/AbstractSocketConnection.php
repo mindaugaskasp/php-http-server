@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Src\Connection\Socket;
+namespace App\Connection\Socket;
 
-use Src\Connection\Socket\Exception\SocketReadException;
-use Src\Connection\Socket\Exception\SocketWriteException;
+use App\Connection\Socket\Exception\SocketReadException;
+use App\Connection\Socket\Exception\SocketWriteException;
 
 abstract class AbstractSocketConnection implements SocketHandler
 {

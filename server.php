@@ -2,27 +2,23 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-use Src\Server\Http\HttpServer;
+use App\Command\HttpServerCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 set_time_limit(0);
 ob_implicit_flush();
 
-$args = $_SERVER['argv'];
+// Create the Symfony Console application
+$application = new Application();
 
-$parsedArgs = [];
+// Add your custom command to the application
+$application->add(new HttpServerCommand());
 
-if (count($args) > 1) {
-    parse_str($args[1], $parsedArgs);
-}
+// Create instances of InputInterface and OutputInterface
+$input = new ArgvInput();
+$output = new ConsoleOutput();
 
-// overwrite with command line arguments if any
-$defaultHost = '127.0.0.1:8000';
-
-$host = $parsedArgs['--host'] ?? $defaultHost;
-
-// Run things
-$server = new HttpServer(
-    ...explode(':', $host)
-);
-
-$server->handleRequests();
+// Run the application
+$application->find(HttpServerCommand::COMMAND_NAME)->run($input, $output);

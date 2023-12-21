@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Src\Server\Http;
+namespace App\Server\Http;
 
-use Src\Connection\Socket\Tcp\TcpSocketConnection;
-use Src\Server\HttpServerHandler;
+use App\Connection\Socket\Tcp\TcpSocketConnection;
+use App\Server\HttpServerHandler;
 
 class HttpServer implements HttpServerHandler
 {

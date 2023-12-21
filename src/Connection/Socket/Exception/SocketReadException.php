@@ -1,5 +1,5 @@
 <?php
 
-namespace Src\Connection\Socket\Exception;
+namespace App\Connection\Socket\Exception;
 
 class SocketReadException extends \Exception {}

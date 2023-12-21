@@ -1,5 +1,5 @@
 <?php
 
-namespace Src\Server;
+namespace App\Server;
 
 interface HttpServerHandler {}
