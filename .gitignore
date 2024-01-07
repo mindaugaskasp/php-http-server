@@ -1,2 +1,9 @@
 # IDE stuff
 .idea
+
+# Dependencies
+vendor
+composer.lock
+
+# Code quality tools
+.php-cs-fixer.cache
